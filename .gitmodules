@@ -1,0 +1,3 @@
+[submodule "kkm/preprocessing"]
+	path = kkm/preprocessing
+	url = https://github.com/mondayinred/flyai_preprocessing.git
