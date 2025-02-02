@@ -1,3 +1,9 @@
 [submodule "kkm/preprocessing"]
 	path = kkm/preprocessing
 	url = https://github.com/mondayinred/flyai_preprocessing.git
+[submodule "kkm/kkm"]
+	path = kkm/kkm
+	url = https://github.com/mondayinred/flyai_preprocessing.git
+[submodule "preprocessing"]
+	path = preprocessing
+	url = https://github.com/mondayinred/flyai_preprocessing.git
