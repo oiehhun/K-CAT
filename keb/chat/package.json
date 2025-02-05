@@ -1,0 +1,19 @@
+{
+  "name": "chat",
+  "version": "1.0.0",
+  "main": "dbAI.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "firebase": "^11.2.0",
+    "firebase-admin": "^13.0.2",
+    "firestore-storage": "^7.1.0",
+    "firestore-storage-core": "^7.0.3"
+  }
+}
