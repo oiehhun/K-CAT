@@ -11,9 +11,11 @@
   "description": "",
   "dependencies": {
     "dotenv": "^16.4.7",
+    "express": "^4.21.2",
     "firebase": "^11.2.0",
     "firebase-admin": "^13.0.2",
     "firestore-storage": "^7.1.0",
-    "firestore-storage-core": "^7.0.3"
+    "firestore-storage-core": "^7.0.3",
+    "mongoose": "^8.10.0"
   }
 }
