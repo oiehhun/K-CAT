@@ -90,3 +90,11 @@ if __name__ == "__main__":
     test_image_path = "/home/k-cat/users/cv-server/data/crop.jpg"
     result = predict_image(test_image_path)
     print(f"Prediction: {result}")
+
+def predict(image_path):
+    img = cv2.imread(image_path)
+    img = cv2.resize(img, img_size)
+    img = img / 255.0
+    img = np.expand_dims(img, axis=0)
+    prediction = model.predict(img)
+    return "NSFW" if prediction[0][0] > 0.5 else "SFW"
