@@ -1,6 +1,7 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import precision_recall_fscore_support, accuracy_score
+from sklearn.utils import shuffle
 
 import torch
 from datasets import Dataset, DatasetDict
@@ -16,14 +17,13 @@ warnings.filterwarnings('ignore')
 
 
 # wandb
-wandb.init(project='grooming', name='kobert_0210_run1')
-
-# data load
-chat_data = pd.read_csv('/home/k-cat/users/lth/data/FinalDataset.csv')
+wandb.init(project='grooming', name='kobert_0213_run1')
 
 # model load
-tokenizer = KoBERTTokenizer.from_pretrained('skt/kobert-base-v1')
-model = BertForSequenceClassification.from_pretrained("skt/kobert-base-v1", num_labels=2)
+model_path = 'skt/kobert-base-v1'
+# finetuned_model_path = '/home/k-cat/TH/K-CAT/lth/model_save/checkpoint-1548'
+tokenizer = KoBERTTokenizer.from_pretrained(model_path)
+model = BertForSequenceClassification.from_pretrained(model_path, num_labels=2)
 
 # tokenizer
 def tokenize_function(data):
@@ -36,29 +36,29 @@ def tokenize_function(data):
     )
     
 # dataset
-chat_data_suffled = chat_data.sample(frac=1).reset_index(drop=True)
-train = chat_data_suffled[:17000]
-test = chat_data_suffled[17000:]
+train_data = pd.read_csv('/home/k-cat/TH/K-CAT/lth/data/training/train_data.csv')
+valid_data = pd.read_csv('/home/k-cat/TH/K-CAT/lth/data/training/valid_data.csv')
+test_data = pd.read_csv('/home/k-cat/TH/K-CAT/lth/data/training/test_data.csv')
 
-train_data, valid_data = train_test_split(train, test_size=0.1, random_state=42)
+train_data = shuffle(train_data, random_state=42).reset_index(drop=True)
 
 train_dataset = Dataset.from_pandas(train_data) # pandas DataFrame -> Hugging Face Dataset 형식으로 변환
 valid_dataset = Dataset.from_pandas(valid_data)
-test_dataset = Dataset.from_pandas(test)
+test_dataset = Dataset.from_pandas(test_data)
 
 datasets = DatasetDict({'train': train_dataset, 'valid': valid_dataset, 'test': test_dataset}) # train, valid, test 데이터셋을 묶어서 저장
 tokenized_datasets = datasets.map(tokenize_function, batched=True) # train, vaild, test 데이터셋에 tokenize_function 적용
 
 ### Train ###
 # 모델 저장 경로 설정
-model_save_path = '/home/k-cat/users/lth/model_save'
+model_save_path = '/home/k-cat/TH/K-CAT/lth/model_save'
 
 # 학습 파라미터 설정
 training_args = TrainingArguments(
     output_dir=model_save_path,                 # 학습 결과 저장 경로
     report_to='wandb',                          # wandb 사용
     run_name="kobert_run1",                     # wandb run 이름
-    num_train_epochs=5,                         # 학습 epoch 설정
+    num_train_epochs=15,                         # 학습 epoch 설정
     per_device_train_batch_size=32,             # train batch_size 설정
     per_device_eval_batch_size=32,              # test batch_size 설정
     logging_dir=model_save_path+'/logs',        # 학습 log 저장 경로
@@ -72,12 +72,12 @@ training_args = TrainingArguments(
 # 최적화 알고리즘(optimizer) 설정
 optimizer = AdamW(model.parameters(), lr=2e-5)
 
-# 스케줄러(scheduler) 설정
-scheduler = get_linear_schedule_with_warmup(
-    optimizer,
-    num_warmup_steps=0,
-    num_training_steps=len(tokenized_datasets['train']) * training_args.num_train_epochs
-)
+# # 스케줄러(scheduler) 설정
+# scheduler = get_linear_schedule_with_warmup(
+#     optimizer,
+#     num_warmup_steps=0,
+#     num_training_steps=len(tokenized_datasets['train']) * training_args.num_train_epochs
+# )
 
 # 성능 평가 지표 설정(binary classification)
 def compute_metrics(pred):
@@ -96,12 +96,13 @@ def compute_metrics(pred):
 trainer = Trainer(
     model=model, 
     tokenizer=tokenizer,
-    optimizers=(optimizer, scheduler),
+    # optimizers=(optimizer, scheduler),
+    optimizers=(optimizer, None),
     args=training_args,
     train_dataset=tokenized_datasets['train'],
     eval_dataset=tokenized_datasets['valid'],
     compute_metrics=compute_metrics,
-    # callbacks=[EarlyStoppingCallback(early_stopping_patience=5)]
+    callbacks=[EarlyStoppingCallback(early_stopping_patience=5)]
 )
 
 # 모델 학습
@@ -110,4 +111,4 @@ trainer.train()
 
 ### Test ###
 # 테스트(Test) 데이터셋 평가
-trainer.evaluate(tokenized_datasets['test'])
+print(trainer.evaluate(tokenized_datasets['test']))

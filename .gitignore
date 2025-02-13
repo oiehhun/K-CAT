@@ -1,0 +1,4 @@
+**/AIHub/
+**/model_save/
+**/wandb/
+**.env
