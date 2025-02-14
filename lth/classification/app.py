@@ -8,7 +8,6 @@ from kobert_tokenizer import KoBERTTokenizer
 app = FastAPI()
 
 # Load the model and tokenizer
-# model_checkpoint = "/home/k-cat/users/lth/model_save/checkpoint-2395" -> 2/12 고은비 수정
 model_checkpoint = "/home/k-cat/K-CAT/lth/model_save/checkpoint-2395"
 tokenizer = KoBERTTokenizer.from_pretrained('skt/kobert-base-v1')
 model = BertForSequenceClassification.from_pretrained(model_checkpoint).to('cuda')
@@ -59,3 +58,5 @@ async def predict(request: TextRequest):
 @app.get("/health")
 async def health_check():
     return {"status": "ok"}
+
+# uvicorn app:app --reload
