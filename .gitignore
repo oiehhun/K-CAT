@@ -1,4 +1,5 @@
 **/AIHub/
-**/model_save/
+**/models/
 **/wandb/
 **.env
+**/__pycache__/

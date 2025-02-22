@@ -4,11 +4,21 @@ import torch
 from transformers import BertForSequenceClassification
 from kobert_tokenizer import KoBERTTokenizer
 
+from fastapi.middleware.cors import CORSMiddleware
+
 # Initialize FastAPI app
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 모든 도메인 허용
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Load the model and tokenizer
-model_checkpoint = "/home/k-cat/K-CAT/lth/model_save/checkpoint-2395"
+model_checkpoint = "/home/k-cat/TH/K-CAT/lth/model_save/checkpoint-1548"
 tokenizer = KoBERTTokenizer.from_pretrained('skt/kobert-base-v1')
 model = BertForSequenceClassification.from_pretrained(model_checkpoint).to('cuda')
 model.eval()
@@ -60,3 +70,4 @@ async def health_check():
     return {"status": "ok"}
 
 # uvicorn app:app --reload
+# uvicorn app:app --host 0.0.0.0 --port 53777 --reload
