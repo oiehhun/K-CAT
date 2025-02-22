@@ -1,9 +1,12 @@
 from fastapi import APIRouter
+from pydantic import BaseModel
 from langchain_openai import ChatOpenAI
 from langchain.chains.summarize import load_summarize_chain
 from langchain.docstore.document import Document
 from langchain.prompts import PromptTemplate
 from dotenv import load_dotenv
+from typing import List
+
 
 router = APIRouter(prefix="/report", tags=["Report Generation"])
 
@@ -41,18 +44,31 @@ report_prompt = PromptTemplate(
     input_variables=["summary", "date", "chat_platform", "predators_name", "child_name"],
 )
 
+# 🔹 Pydantic 모델 (JSON 형식 정확히 맞춤)
+class ChatText(BaseModel):
+    text: List[str]  # ✅ 리스트 형식 맞음
+
+class ReportRequest(BaseModel):
+    chat_text: ChatText
+    date: str
+    chat_platform: str
+    predators_name: str
+    child_name: str
+
 @router.post("/generate/")
-async def generate_report(chat_text: str, date: str, chat_platform: str, predators_name: str, child_name: str):
-    document = Document(page_content=chat_text)
+async def generate_report(request: ReportRequest):
+    conversation_text = "\n".join(request.chat_text.text)
+    document = Document(page_content=conversation_text)
+    
     summary_chain = load_summarize_chain(llm, chain_type="stuff", prompt=summary_prompt, document_variable_name="input")
     summary = summary_chain.run([document])
 
     report = report_prompt.format(
         summary=summary,
-        date=date,
-        chat_platform=chat_platform,
-        predators_name=predators_name,
-        child_name=child_name,
+        date=request.date,
+        chat_platform=request.chat_platform,
+        predators_name=request.predators_name,
+        child_name=request.child_name,
     )
 
     return {"report": report}
