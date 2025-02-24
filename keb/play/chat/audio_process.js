@@ -1,17 +1,20 @@
-const { dbconnection } = require("../config/db");
+const dbconnection =  require('../config/db');
 const mongoose = require("mongoose");
 const fs = require("fs");
 const path = require("path");
 const { time } = require("console");
+require('dotenv').config();
 
 let chatDB;
 let audio_model;
+
+const { sendTTS } = require("../ai/tts");
 
 // ✅ 비동기 DB 연결 및 모델 정의
 async function initDB() {
     try {
         if (!chatDB) {
-            const dbConnections = await connectDB();
+            const dbConnections = await dbconnection();
             chatDB = dbConnections.chatDB;
         }
 
@@ -35,7 +38,7 @@ async function initDB() {
 // ✅ `initDB()`가 완료될 때까지 대기 후 실행 보장
 const dbInitialized = initDB();
 
-async function processaudio(data) {
+async function processAudio(data) {
     // 전달되는 data는 "filepath"임
 
     try {
@@ -77,7 +80,8 @@ async function processaudio(data) {
             }
         console.log("✅ 이미지 MongoDB 저장 완료");
         
-        let response = await axios.post('http://localhost:9002/MN', audio_api);
+        let response = await sendTTS(audio_api);
+        // response를 음성 자리에 끼워넣어야 함
         
         return { message: response.body, path: filepath }; // ✅ 파일 경로 반환
     } catch (error) {
@@ -85,3 +89,5 @@ async function processaudio(data) {
         throw new Error("이미지 처리 중 오류 발생");
     }
 }
+
+module.exports = { processAudio } 

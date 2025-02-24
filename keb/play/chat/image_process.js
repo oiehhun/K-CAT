@@ -1,17 +1,21 @@
-const { dbconnection } = require("../config/db");
+const dbconnection = require('../config/db');
 const mongoose = require("mongoose");
 const fs = require("fs");
 const path = require("path");
 const { time } = require("console");
+const axios = require('axios');
 
 let chatDB;
 let image_model;
+
+
+const { sendMN } = require("../ai/mn");
 
 // ✅ 비동기 DB 연결 및 모델 정의
 async function initDB() {
     try {
         if (!chatDB) {
-            const dbConnections = await connectDB();
+            const dbConnections = await dbconnection();
             chatDB = dbConnections.chatDB;
         }
 
@@ -37,6 +41,7 @@ const dbInitialized = initDB();
 
 async function processImage(data) {
     // 전달되는 data는 "filepath"임
+    //console.log("Data in processimage", data.path);
 
     try {
         await dbInitialized; // ✅ DB 초기화가 완료될 때까지 대기
@@ -45,7 +50,7 @@ async function processImage(data) {
             throw new Error("MongoDB 모델이 초기화되지 않았습니다.");
         }
 
-        if (data.phone || data.filepath) {
+        if (!data.phone || !data.path) {
             throw new Error("전화번호(phone)와 이미지 경로는 필수입니다.");
         }
 
@@ -77,9 +82,10 @@ async function processImage(data) {
             }
         console.log("✅ 이미지 MongoDB 저장 완료");
         
-        let response = await axios.post('http://localhost:9002/MN', image_api);
-        
-        return { message: response.body, path: filepath }; // ✅ 파일 경로 반환
+        let response = await sendMN(image_api);
+
+        //console.log("Response Data in MN", response.message ,response.path);
+        return response.path; // ✅ 파일 경로 반환
     } catch (error) {
         console.error("❌ 이미지 처리 오류:", error.message);
         throw new Error("이미지 처리 중 오류 발생");

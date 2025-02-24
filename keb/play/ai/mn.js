@@ -1,22 +1,18 @@
-const express = requrire('express');
+const express = require('express');
 const axios = require("axios");
-
 const fs = require("fs");
 const FormData = require('form-data');
+require('dotenv').config();
 
 const app = express();
-PORT = 9002;
-
-app.post("/mn", async (req, res) => {
-    sendToAIServer(req.body)
-});
+PORT = process.env.PORT_MN;
 
 app.listen(PORT, () => {
-    console.log(`✅ BERT 모델 서버가 http://localhost:${PORT}/AI/Bert.js 에서 실행 중`);
+    console.log(`✅ MobileNet 모델 서버가 http://localhost에서 실행 중`);
 
 });
 
-async function sendToAIServer(request) {
+async function sendMN(request) {
     /*let image_api = {
         phone : data.phone, 
         images: {
@@ -25,7 +21,7 @@ async function sendToAIServer(request) {
         time:data.time
     }};
     */
-   let {phone_number, images} = request;
+   let {phone, images} = request;
 
     try {
         if (!images.path) {
@@ -48,7 +44,7 @@ async function sendToAIServer(request) {
             contentType: "image/jpeg",
         });
 
-        const aiServerUrl = "http://121.161.212.97:53777/image/predict/";
+        const aiServerUrl = process.env.AI_SERVER_MN;
         console.log("🌍 AI 서버에 이미지 전송 중... URL:", aiServerUrl);
 
         const response = await axios.post(aiServerUrl, formData, {
@@ -59,8 +55,20 @@ async function sendToAIServer(request) {
         });
         // alert.js 에 알람 전송하는 로직 작성해야 함
 
-        console.log("✅ AI 서버 응답:", response.data);
-        return response.data;
+        console.log("✅ AI 서버 응답:", `${images.filename}`, response.data);
+
+        if (response.data.prediction == '1'){
+            // alert.js 에 알람 전송하는 로직 작성해야 함
+            let alert_api = {
+                phone :phone,
+                message : "이미지 내역에서 위험상황 발생!",
+            }
+            axios.post("http://localhost:8000/app/check_alert",alert_api);
+            return  {message : alert_api.message};
+        }
+        else{
+            return {message : "이상 없음", path : images.path};
+        }
     } catch (error) {
         console.error("❌ AI 서버 전송 오류:", error.message);
 
@@ -74,3 +82,5 @@ async function sendToAIServer(request) {
         throw new Error("AI 서버 전송 실패");
     }
 }
+
+module.exports = {sendMN}

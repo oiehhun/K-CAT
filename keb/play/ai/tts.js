@@ -1,22 +1,23 @@
-const express = requrire('express');
+const express = require('express');
 const axios = require("axios");
 
 const fs = require("fs");
 const FormData = require('form-data');
+require('dotenv').config();
 
 const app = express();
-PORT = 9002;
+PORT = process.env.PORT_TTS;
 
 app.post("/tts", async (req, res) => {
     sendToAIServer(req.body)
 });
 
 app.listen(PORT, () => {
-    console.log(`✅ BERT 모델 서버가 http://localhost:${PORT}/AI/Bert.js 에서 실행 중`);
+    console.log(`✅ TTS 모델 서버가 http://localhost 에서 실행 중`);
 
 });
 
-async function sendToAIServer(request) {
+async function sendTTS(request) {
     /*let audio_api = {
         phone : data.phone, 
         audios: {
@@ -46,7 +47,7 @@ async function sendToAIServer(request) {
         const formData = new FormData();
         formData.append("file", fs.createReadStream(audios.path));
         
-        const aiServerUrl = "http://121.161.212.97:53777/speech/transcribe/";
+        const aiServerUrl = process.env.AI_SERVER_TTS;
         console.log("🌍 AI 서버에 이미지 전송 중... URL:", aiServerUrl);
 
         const response = await axios.post(aiServerUrl, formData, {
@@ -72,3 +73,5 @@ async function sendToAIServer(request) {
         throw new Error("AI 서버 전송 실패");
     }
 }
+
+module.exports = {sendTTS};
