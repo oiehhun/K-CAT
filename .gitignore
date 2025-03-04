@@ -4,7 +4,8 @@
 **/nsfw_img/
 **/sfw_img/
 **/predict/
-**/models/
+**/kobert_finetuning/
+**/vit-finetuned/
 **/wandb/
 **.env
 **/__pycache__/
