@@ -1,4 +1,9 @@
+**/SBS/
 **/AIHub/
+**/pre-processing/
+**/nsfw_img/
+**/sfw_img/
+**/predict/
 **/models/
 **/wandb/
 **.env
