@@ -38,8 +38,8 @@ model = AutoModelForImageClassification.from_pretrained(
 processor = ViTImageProcessor.from_pretrained("google/vit-base-patch16-224")
 
 # 데이터셋 경로 설정
-data_path_nsfw = "./AI/data/image_data/nsfw_img"
-data_path_sfw = "./AI/data/image_data/sfw_img"
+data_path_nsfw = "../data/image_data/nsfw_img"
+data_path_sfw = "../data/image_data/sfw_img"
 
 img_path_list = (
     [os.path.join(data_path_nsfw, f) for f in os.listdir(data_path_nsfw)]
@@ -92,7 +92,7 @@ dataset_split = DatasetDict({
 
 # 학습 하이퍼파라미터 설정
 training_args = TrainingArguments(
-    output_dir="./AI/models/vit-finetuned",  
+    output_dir="../app/models/vit-finetuned",  
     evaluation_strategy="epoch",
     save_strategy="epoch",
     per_device_train_batch_size=16,
@@ -106,7 +106,6 @@ training_args = TrainingArguments(
     metric_for_best_model="accuracy",
     greater_is_better=True,
 )
-
 
 # 평가 함수 정의
 def compute_metrics(pred):
@@ -132,5 +131,5 @@ trainer.train()
 trainer.evaluate(dataset_split["test"])
 
 # 학습 후 최적의 모델 저장
-trainer.save_model("./AI/models/vit-finetuned")
-processor.save_pretrained("./AI/models/vit-finetuned")
+trainer.save_model("../app/models/vit-finetuned")
+processor.save_pretrained("../app/models/vit-finetuned")

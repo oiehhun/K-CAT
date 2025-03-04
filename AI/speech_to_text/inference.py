@@ -4,7 +4,7 @@ load_dotenv()
 
 client = OpenAI()
 
-audio_file= open("./AI/speech_to_text/givemephoto.mp3", "rb")
+audio_file= open("givemephoto.mp3", "rb")
 transcription = client.audio.transcriptions.create(
     model="whisper-1", 
     file=audio_file

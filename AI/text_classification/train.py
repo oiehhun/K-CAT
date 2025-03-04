@@ -35,9 +35,9 @@ def tokenize_function(data):
     )
     
 # dataset
-train_data = pd.read_csv('./data/text_data/train_data.csv')
-valid_data = pd.read_csv('./data/text_data/valid_data.csv')
-test_data = pd.read_csv('./data/text_data/test_data.csv')
+train_data = pd.read_csv('../data/text_data/train_data.csv')
+valid_data = pd.read_csv('../data/text_data/valid_data.csv')
+test_data = pd.read_csv('../data/text_data/test_data.csv')
 
 train_data = shuffle(train_data, random_state=42).reset_index(drop=True)
 
@@ -50,7 +50,7 @@ tokenized_datasets = datasets.map(tokenize_function, batched=True) # train, vail
 
 ### Train ###
 # 모델 저장 경로 설정
-model_save_path = '../models'
+model_save_path = '../app/models'
 
 # 학습 파라미터 설정
 training_args = TrainingArguments(
