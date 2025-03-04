@@ -1,5 +1,12 @@
+**/SBS/
 **/AIHub/
-**/models/
+**/pre-processing/
+**/nsfw_img/
+**/sfw_img/
+**/predict/
+**/kobert_finetuning/
+**/vit-finetuned/
 **/wandb/
 **.env
 **/__pycache__/
+**/.DS_Store/
