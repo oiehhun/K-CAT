@@ -10,7 +10,7 @@ import time
 router = APIRouter(prefix="/text", tags=["Text Classification"])
 
 # 모델 로드
-model_checkpoint = "./AI/models/kobert_finetuning"
+model_checkpoint = "../models/kobert_finetuning"
 tokenizer = KoBERTTokenizer.from_pretrained("skt/kobert-base-v1")
 model = BertForSequenceClassification.from_pretrained(model_checkpoint).to("cuda")
 model.eval()

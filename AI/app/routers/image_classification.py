@@ -10,7 +10,7 @@ from transformers import ViTImageProcessor, AutoModelForImageClassification
 router = APIRouter(prefix="/image", tags=["Image Classification"])
 
 # 모델 및 프로세서 로드
-model_path = "./AI/models/vit-finetuned"
+model_path = "../models/vit-finetuned"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 model = AutoModelForImageClassification.from_pretrained(model_path).to(device)
