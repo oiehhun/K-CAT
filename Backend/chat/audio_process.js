@@ -8,7 +8,8 @@ require('dotenv').config();
 let chatDB;
 let audio_model;
 
-const { sendTTS } = require("../ai/tts");
+const { sendTTS } = require("../ai/stt");
+const { nextTick } = require('process');
 
 // ✅ 비동기 DB 연결 및 모델 정의
 async function initDB() {
@@ -59,6 +60,8 @@ async function processAudio(data) {
     }
     let audio_api = {
         phone : data.phone, 
+        name : data.name,
+        nickname : data.nickname,
         audios: {
         filename: data.filename, 
         path: data.path, 
@@ -80,7 +83,7 @@ async function processAudio(data) {
             }
         console.log("✅ 이미지 MongoDB 저장 완료");
         
-        let response = await sendTTS(audio_api);
+        let response = await sendSTT(audio_api);
         // response를 음성 자리에 끼워넣어야 함
         
         return { message: response.body, path: filepath }; // ✅ 파일 경로 반환

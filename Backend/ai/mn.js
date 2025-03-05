@@ -13,14 +13,6 @@ app.listen(PORT, () => {
 });
 
 async function sendMN(request) {
-    /*let image_api = {
-        phone : data.phone, 
-        images: {
-        filename: data.filename, 
-        path: data.path, 
-        time:data.time
-    }};
-    */
    let {phone, images} = request;
 
     try {
@@ -55,9 +47,9 @@ async function sendMN(request) {
         });
         // alert.js 에 알람 전송하는 로직 작성해야 함
 
-        console.log("✅ AI 서버 응답:", `${images.filename}`, response.data);
+        console.log("✅ AI 서버 응답:", `${images.filename}`, response.data.prediction);
 
-        if (response.data.prediction == '1'){
+        if (response.data.prediction === 'nsfw'){
             // alert.js 에 알람 전송하는 로직 작성해야 함
             let alert_api = {
                 phone :phone,

@@ -40,6 +40,8 @@ async function initDB() {
 const dbInitialized = initDB();
 
 async function processImage(data) {
+
+    console.log("Data in image: ", data);
     // 전달되는 data는 "filepath"임
     //console.log("Data in processimage", data.path);
 
