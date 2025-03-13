@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 활성화 상태  -->
+    <item android:state_enabled="true" android:drawable="@drawable/next_btn"/>
+    <!-- 비활성화 상태  -->
+    <item android:state_enabled="false" android:drawable="@drawable/next_before_btn"/>
+</selector>
